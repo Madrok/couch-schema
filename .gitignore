@@ -6,6 +6,14 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 build
+bin/*
+tests/Auth.ts
+tests/AuthPermissions.ts
+tests/Name.ts
+tests/Person.ts
+tests/Phone.ts
+tests/Student.ts
+tests/couchModelsInit.ts
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
