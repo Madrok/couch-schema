@@ -1,0 +1,46 @@
+{
+	"name": "Auth",
+	"version": 1,
+	"fields": {
+		"name": "string",
+		"password": {
+			"type": "string",
+			"validate": "(v: String) => v && v.length > 6",
+			"validateFailMsg": "Password length must be at least 6 characters"
+		},
+		"username": "string",
+		"email": {
+			"type": "string",
+			"validate": "Validators.email"
+		},
+		"provider": {
+			"type": "string",
+			"validate": "(v:string) => (v === 'google' || v === 'local')",
+			"validateFailMsg": "provider must be either 'local' or 'google'"
+		},
+		"google_id": {
+			"type": "string",
+			"required": false
+		},
+		"domain": {
+			"type": "string",
+			"required": false
+		},
+		"avatar": {
+			"type": "string",
+			"required": false
+		},
+		"permissions": {
+			"type": "subschema",
+			"schema": "AuthPermissions"
+		},
+		"groups": [
+			{
+				"type": "string",
+				"values": "'admin' | 'registrars' | 'teachers'",
+				"validate": "(v:string) => ['teachers', 'admin', 'registrars'].indexOf(v) >= 0",
+				"validateFailMsg": "'%v%' is not a valid group %S% %s% %t%"
+			}
+		]
+	}
+}

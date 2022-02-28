@@ -1,0 +1,56 @@
+{
+  "name": "couch-schema",
+  "version": "1.0.0",
+  "description": "Schema and models for couchd, along with a schema generator",
+  "main": "dist/index.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "yarn build-library && yarn build-bin",
+    "build-library": "tsc",
+    "build-bin": "tsc --project tsconfig.generator.json && yarn rollup-bin && chmod a+x ./bin/schemagenerator.cjs",
+    "clean": "rm -rf dist/* && yarn clean-bin && yarn clean-build",
+    "clean-build": "rm -rf build/*",
+    "clean-bin": "rm -rf bin/*",
+    "install-bin": "npm uninstall -g . && npm install -g .",
+    "rollup-library": "npx rollup -c",
+    "rollup-bin": "npx rollup --config rollup.config.generator.js",
+    "test-bin": "yarn clean-bin && yarn build-bin && yarn install-bin && schema-generator -f --pkgPath ../src/index.mjs --out tests tests"
+  },
+  "bin": {
+    "schema-generator": "./bin/schemagenerator.cjs"
+  },
+  "type": "module",
+  "author": "Russell Weir",
+  "license": "ISC",
+  "dependencies": {
+    "debug": "^4.3.3",
+    "google-libphonenumber": "^3.2.27",
+    "lodash": "^4.17.21",
+    "nano": "^9.0.5"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.17.5",
+    "@rollup/plugin-commonjs": "^21.0.1",
+    "@rollup/plugin-node-resolve": "^13.1.3",
+    "@rollup/plugin-typescript": "^8.3.0",
+    "@types/command-line-args": "^5.2.0",
+    "@types/command-line-usage": "^5.0.2",
+    "@types/debug": "^4.1.7",
+    "@types/glob": "^7.2.0",
+    "@types/google-libphonenumber": "^7.4.23",
+    "@types/lodash": "^4.14.178",
+    "@types/nano": "^7.0.0",
+    "@types/node": "^17.0.18",
+    "@types/typescript": "^2.0.0",
+    "babel": "^6.23.0",
+    "command-line-args": "^5.2.1",
+    "command-line-usage": "^6.1.1",
+    "fast-glob": "^3.2.11",
+    "is-directory": "^0.3.1",
+    "rollup": "^2.67.3",
+    "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-preserve-shebang": "^1.0.1",
+    "tslib": "^2.3.1",
+    "typescript": "^4.7.0-dev.20220219"
+  }
+}

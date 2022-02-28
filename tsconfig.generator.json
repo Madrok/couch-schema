@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "node",
+    "strict": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "removeComments": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": false,
+    "typeRoots": ["types", "node_modules/@types"],
+    "outDir": "build",
+    "lib": ["ES2017"],
+    "allowJs": false
+  },
+  "include": ["bin-src/**/*"],
+  "exclude": ["node_modules", "codeGen", "utils", "public", "ssl", "docs"]
+}

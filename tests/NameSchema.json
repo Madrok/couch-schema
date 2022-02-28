@@ -1,0 +1,36 @@
+{
+	"name": "Name",
+	"version": 1,
+	"fields": {
+		"title": {
+			"type": "string",
+			"values": "'Mr.'|'Mrs.'|'Miss'|'Ms.'|'Mstr.'|'Dr.'",
+			"required": false
+		},
+		"firstName": "string",
+		"nickName": "optstring",
+		"middleName": "optstring",
+		"lastName": "string",
+		"suffix": "optstring",
+		"fullName": {
+			"type": "calculated",
+			"calculator": "{ return `${this.firstName} ${this.middleName} ${this.lastName} ${this.suffix}`.replace(/  /g,' ');}",
+			"calculatedType": "string"
+		},
+		"fullCommonName": {
+			"type": "calculated",
+			"calculator": "{ return `${this.nickName} ${this.lastName}`.replace(/  /g,' ');}",
+			"calculatedType": "string"
+		},
+		"displayName": {
+			"type": "calculated",
+			"calculator": "{ return `${this.firstName} (${this.nickName}) ${this.lastName}`.replace(/  /g,' ');}",
+			"calculatedType": "string"
+		},
+		"displayFullName": {
+			"type": "calculated",
+			"calculator": "{ return `${this.firstName} (${this.nickName}) ${this.middleName} ${this.lastName}`.replace(/  /g,' ');}",
+			"calculatedType": "string"
+		}
+	}
+}
