@@ -40,6 +40,7 @@ The more advanced format is
         "validateFailMsg": "Name length must be more than 4 characters"
     }    
 }
+```
 
 ## Command Line Tool
 Installed with the package is a binary called 'schema-generator'. This is the tools used to generate typescript models from the json schema files.
