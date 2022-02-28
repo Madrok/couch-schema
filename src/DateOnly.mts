@@ -13,7 +13,7 @@ export interface DateOnlyObject {
 	month: number;
 	/** the day of the month, 1-31 */
 	date: number;
-} 
+}
 
 /**
  * A class representing a date with no timezone. Useful for
@@ -30,10 +30,10 @@ export class DateOnly {
 	 * @returns {DateOnly} A new DateOnly instance
 	 */
 	public static ofDate(date: Date) {
-		let y : number = date.getUTCFullYear();
-		let m : number = date.getUTCMonth();
-		let d : number = date.getUTCDate();
-		return new DateOnly(y,m,d);
+		let y: number = date.getUTCFullYear();
+		let m: number = date.getUTCMonth();
+		let d: number = date.getUTCDate();
+		return new DateOnly(y, m, d);
 	}
 
 	/**
@@ -42,21 +42,21 @@ export class DateOnly {
 	 * @param {string} dateStr in format YYYY-MM-DD
 	 * @returns {DateOnly} A new DateOnly instance
 	 */
-	public static ofString(dateStr:string) : DateOnly {
+	public static ofString(dateStr: string): DateOnly {
 		let match = dateStr.match("^[0-9]{4}-[0-1][0-9]-[0-3][0-9]$");
-		if(!match || match.length !== 1) {
+		if (!match || match.length !== 1) {
 			throw new Error(`date string ${dateStr} does not match 'YYYY-MM-DD'`);
 		}
 		//console.log(JSON.stringify(match));
 		let parts = dateStr.split("-");
-		return new DateOnly(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+		return new DateOnly(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
 	}
 
 	/**
 	 * Get today
 	 * @returns {DateOnly} A date representing today
 	 */
-	public static now() : DateOnly {
+	public static now(): DateOnly {
 		return DateOnly.ofDate(new Date(Date.now()));
 	}
 	/*
@@ -98,12 +98,12 @@ export class DateOnly {
 	 * Year property get/set
 	 * @type number
 	 */
-	public get year() : number {
+	public get year(): number {
 		return this._y;
 	}
 
-	public set year(v:number) {
-		this._y =  v;
+	public set year(v: number) {
+		this._y = v;
 		this.recreate();
 	}
 
@@ -111,7 +111,7 @@ export class DateOnly {
 	 * Month property get/set
 	 * @type number
 	 */
-	public get month() : number {
+	public get month(): number {
 		return this._m;
 	}
 
@@ -124,11 +124,11 @@ export class DateOnly {
 	 * Day property get/set
 	 * @type number
 	 */
-	public get day() : number {
+	public get day(): number {
 		return this._d;
 	}
 
-	public set day(v:number)  {
+	public set day(v: number) {
 		this._d = v;
 		this.recreate();
 	}
@@ -145,10 +145,10 @@ export class DateOnly {
 	 * Returns a readable version of this date
 	 * @returns {string} yyyy-mm-dd format
 	 */
-	public toString() : string {
-		let y : string = this._y.toString();
-		let m : string = String(this._m + 1).padStart(2, "0");
-		let d : string = String(this._d).padStart(2, "0");
+	public toString(): string {
+		let y: string = this._y.toString();
+		let m: string = String(this._m + 1).padStart(2, "0");
+		let d: string = String(this._d).padStart(2, "0");
 		return `${y}-${m}-${d}`;
 	}
 
@@ -160,7 +160,7 @@ export class DateOnly {
 	 * Create an object format of this date.
 	 * @returns {DateOnlyObject} this date in object format
 	 */
-	public toObject() : DateOnlyObject {
+	public toObject(): DateOnlyObject {
 		return {
 			year: this._y,
 			month: this._m,

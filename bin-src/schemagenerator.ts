@@ -33,7 +33,7 @@ const optionDefinitions = [
 ]
 
 
-const options : IProgramOptions = commandLineArgs(optionDefinitions) as IProgramOptions;
+const options: IProgramOptions = commandLineArgs(optionDefinitions) as IProgramOptions;
 
 const usage = commandLineUsage([
 	{
@@ -102,7 +102,7 @@ let checkDirectory = (dir, msg) => {
 	if (!dir || typeof dir !== 'string') {
 		commandError(`Missing ${msg} directory`);
 	}
-	
+
 	if (!isDirectory.sync(dir)) {
 		commandError(`Invalid ${msg} directory ${dir}`);
 	}

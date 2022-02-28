@@ -58,7 +58,7 @@ export function Model<DT>(type: string): any {
 			try {
 				let res = await BaseModel._server.get(id);
 				console.log(res);
-				if(!!!res)
+				if (!!!res)
 					return null;
 				let rv = new BaseModel._class(res);
 				// if (res['type'] === BaseModel.doctype__)
@@ -117,16 +117,16 @@ export function Model<DT>(type: string): any {
 			console.log("CONSTRUCTOR", BaseModel.doctype__);
 			this._schema = schema;
 
-			if(obj === undefined) {
+			if (obj === undefined) {
 				obj = {
-					doctype__ : BaseModel.doctype__,
+					doctype__: BaseModel.doctype__,
 					schema_version__: this._schema.schema_version__
 				}
 			}
 			this._obj = obj;
 			let rid = obj._id;
 			console.log(rid, JSON.stringify(this._obj));
-			
+
 			let oldVer = this._obj.schema_version__;
 			if (oldVer === undefined || oldVer !== this._schema.schema_version__) {
 				let rv = this._schema.schemaUpdater(this._obj);
@@ -135,7 +135,7 @@ export function Model<DT>(type: string): any {
 					this._obj = rv.obj;
 				}
 			}
-			if(this._obj.doctype__ !== BaseModel.doctype__) {
+			if (this._obj.doctype__ !== BaseModel.doctype__) {
 				console.log("WTF", this._obj.doctype__, BaseModel.doctype__);
 				throw new ModelMismatchError(rid, BaseModel.doctype__, this._obj.doctype__);
 			}

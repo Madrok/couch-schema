@@ -2,16 +2,16 @@
 	"name": "Phone",
 	"version": 1,
 	"fields": {
-        "number": {
-            "type": "string",
-            "validate": "(v:string) => Validators.phone(v)"
-        },
-        "phoneType": {
-            "type": "string",
-            "required": true,
-            "values": "'mobile'|'home'|'work'|'other'",
-            "validate": "(v:string) => ['mobile','home','work','other'].includes(v)",
-            "default": "mobile"
-        }
-    }
+		"number": {
+			"type": "string",
+			"validate": "(v:string) => Validators.phone(v)"
+		},
+		"phoneType": {
+			"type": "string",
+			"required": true,
+			"values": "'mobile'|'home'|'work'|'other'",
+			"validate": "(v:string) => ['mobile','home','work','other'].includes(v)",
+			"default": "mobile"
+		}
+	}
 }

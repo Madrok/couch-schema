@@ -30,7 +30,7 @@ export interface SchemaFieldInfo<T> {
 	 * param {*} any additional data the validator needs
 	 * see {@link validateFailMsg|validateFailMsg}
 	 **/
-	validate?: (v: T, data?:any) => boolean;
+	validate?: (v: T, data?: any) => boolean;
 	/** a validation failure message. this is used if the validation function does not throw an error */
 	validateFailMsg?: string;
 
@@ -40,7 +40,7 @@ export interface SchemaFieldInfo<T> {
 	 * param {T} v the data to validate
 	 * param {*} any additional data the validator needs
 	 **/
-	formatter?: (v:T, data?:any) => T;
+	formatter?: (v: T, data?: any) => T;
 
 	/** If field is required */
 	required?: boolean;
@@ -50,7 +50,7 @@ export interface SchemaFieldInfo<T> {
 	max?: number | Date | DateOnly;
 
 	/** a function called for calculated fields */
-	calculator?: string; 
+	calculator?: string;
 	/** a typescript style fenced values list */
 	values?: string;
 }
@@ -112,7 +112,7 @@ export class Schema {
 	 * array of strings.
 	 * @returns {string[]} array of field names for this schema
 	 */
-	public getFields() : string[] {
+	public getFields(): string[] {
 		return Object.keys(this._definition);
 	}
 

@@ -35,7 +35,7 @@ export let TBoolean: SchemaFieldInfo<boolean> = {
 /**
  * A optional boolean field. Defaults to false
  */
-export let TOptBoolean : SchemaFieldInfo<boolean> = {
+export let TOptBoolean: SchemaFieldInfo<boolean> = {
 	type: "boolean",
 	required: false,
 	default: false

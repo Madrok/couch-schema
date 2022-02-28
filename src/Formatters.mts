@@ -27,11 +27,11 @@ export class Formatters {
 	 * @see {@link https://github.com/ruimarinho/google-libphonenumber/blob/master/src/regioncodefortesting.js|List of country codes}
 	 * @returns a formatted phone number
 	 */
-	static phone(v: string, countryCode: string = "US", formatFor:string="INTERNATIONAL"): string {
+	static phone(v: string, countryCode: string = "US", formatFor: string = "INTERNATIONAL"): string {
 		console.log(`Formatters.phoneNumber ${countryCode} ${v}`);
 		let number = phoneUtil.parseAndKeepRawInput(v, countryCode);
 
-		if(formatFor === "INTERNATIONAL")
+		if (formatFor === "INTERNATIONAL")
 			return phoneUtil.format(number, PNF.INTERNATIONAL);
 		return phoneUtil.formatOutOfCountryCallingNumber(number, formatFor);
 	}

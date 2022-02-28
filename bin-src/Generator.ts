@@ -21,7 +21,7 @@ export default class Generator {
 	dict: { [key: string]: JsonSchema };
 	writer: Writer;
 
-	constructor(opts:IProgramOptions) {
+	constructor(opts: IProgramOptions) {
 		this.opts = opts;
 		this.dict = {};
 		this.writer = new Writer(opts);
@@ -222,9 +222,9 @@ export default class Generator {
 				throw new GeneratorError(`${k}.required invalid type ${typeof fields[k].required}`);
 		}
 
-		
-		if(jso.customImportLines !== undefined) {
-			if(!Array.isArray(jso.customImportLines))
+
+		if (jso.customImportLines !== undefined) {
+			if (!Array.isArray(jso.customImportLines))
 				throw new GeneratorError(`customImportLines must be an array`);
 		}
 		jso.imports = [];
@@ -260,14 +260,14 @@ export default class Generator {
 	 * Check for any additional imports like DateOnly
 	 * @param schemaName the schema name
 	 */
-	private checkAdditionalImports(schemaName:string) {
+	private checkAdditionalImports(schemaName: string) {
 		let schema = this.dict[schemaName];
 		let fields = schema.fields;
 		for (const [key, value] of Object.entries(fields)) {
-			if(value.type === 'date')
+			if (value.type === 'date')
 				schema.requiresDateOnly = true;
 		}
-		
+
 	}
 
 	/**
@@ -319,7 +319,7 @@ export default class Generator {
 			}
 		}
 		rv = rv.reduce((pv, cv) => {
-			if(pv.includes(cv)) {
+			if (pv.includes(cv)) {
 				return pv;
 			}
 			return pv.push(cv);

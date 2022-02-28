@@ -2,15 +2,17 @@
 	"name": "Person",
 	"version": 1,
 	"fields": {
-        "name": {
-            "type": "subschema",
-            "schema": "Name",
-            "required": true
-        },
-        "phone": [{
-            "type":"subschema",
-            "schema": "Phone",
-            "required": false
-        }]
-    }
+		"name": {
+			"type": "subschema",
+			"schema": "Name",
+			"required": true
+		},
+		"phone": [
+			{
+				"type": "subschema",
+				"schema": "Phone",
+				"required": false
+			}
+		]
+	}
 }

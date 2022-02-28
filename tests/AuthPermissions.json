@@ -1,8 +1,8 @@
 {
-    "name": "AuthPermissions",
-    "version": 1,
-    "fields": {
-        "access": "boolean",
+	"name": "AuthPermissions",
+	"version": 1,
+	"fields": {
+		"access": "boolean",
 		"administrator": "optboolean",
 		"viewContacts": "optboolean",
 		"editContacts": "optboolean",
@@ -11,5 +11,5 @@
 		"uploadFiles": "optboolean",
 		"editASN": "optboolean",
 		"contactTags": "optboolean"
-    }
+	}
 }
