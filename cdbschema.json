@@ -1,5 +1,5 @@
 {
-	"title": "JSON schema for the TypeScript compiler's configuration file",
+	"title": "JSON schema for couch-schema schema files",
 	"$schema": "http://json-schema.org/schema",
 	"id": "https://json.schemastore.org/tsconfig",
 	"definitions": {
