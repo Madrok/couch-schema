@@ -92,6 +92,11 @@
 			}
 		}
 	},
+	"required": [
+		"name",
+		"version",
+		"fields"
+	],
 	"properties": {
 		"name": {
 			"description": "The name of the schema",
