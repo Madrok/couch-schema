@@ -159,7 +159,7 @@
 		"fields": {
 			"description": "Definitions for all the fields in the schema",
 			"patternProperties": {
-				"^([A-Za-z])+[A-Za-z0-9]*$": {
+				"^([A-Za-z])+[A-Za-z0-9_]*$": {
 					"$ref": "#/definitions/fieldTypeDefiniton"
 				}
 			},
