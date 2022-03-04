@@ -2,11 +2,14 @@
 	"title": "JSON schema for couch-schema schema files",
 	"$schema": "http://json-schema.org/schema",
 	"id": "https://json.schemastore.org/tsconfig",
+	"type": "object",
 	"definitions": {
 		"fieldShortcuts": {
 			"enum": [
 				"string",
+				"optstring",
 				"boolean",
+				"optboolean",
 				"number",
 				"date",
 				"datetime",
@@ -31,19 +34,24 @@
 		},
 		"fieldTypeDefiniton": {
 			"description": "Definitions for all the fields in the schema",
-			"anyOf": [
+			"oneOf": [
 				{
 					"$ref": "#/definitions/fieldShortcuts"
 				},
 				{
 					"$ref": "#/definitions/fieldDefinition"
+				},
+				{
+					"$ref": "#/definitions/fieldDefinitionArray"
 				}
 			]
 		},
 		"fieldDefinition": {
+			"type": "object",
 			"required": [
 				"type"
 			],
+			"additionalProperties": false,
 			"properties": {
 				"type": {
 					"$ref": "#/definitions/fieldTypes"
@@ -90,6 +98,14 @@
 					"type": "string"
 				}
 			}
+		},
+		"fieldDefinitionArray": {
+			"type": "array",
+			"minItems": 1,
+			"maxItems": 1,
+			"items": {
+				"$ref": "#/definitions/fieldDefinition"
+			}
 		}
 	},
 	"required": [
@@ -112,10 +128,12 @@
 		"fields": {
 			"description": "Definitions for all the fields in the schema",
 			"patternProperties": {
-				"^.*$": {
+				"^([A-Za-z])+[A-Za-z0-9]*$": {
 					"$ref": "#/definitions/fieldTypeDefiniton"
 				}
-			}
+			},
+			"minProperties": 1,
+			"additionalProperties": false
 		}
 	}
 }
