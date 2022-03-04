@@ -1,5 +1,5 @@
 {
-	"$schema": "https://raw.githubusercontent.com/Madrok/couch-schema/main/cdbschema.json",
+	"$schema": "../cdbschema.json",
 	"name": "Person",
 	"version": 1,
 	"fields": {

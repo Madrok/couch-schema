@@ -14,7 +14,7 @@
 		"install": "npm uninstall -g . && npm install -g .",
 		"rollup-library": "npx rollup -c",
 		"rollup-bin": "npx rollup --config rollup.config.generator.js",
-		"test-bin": "yarn clean-bin && yarn build-bin && yarn install-bin && schema-generator -f --pkgPath ../src/index.mjs --out tests tests"
+		"test-bin": "yarn clean-bin && yarn build-bin && yarn install && schema-generator -f --pkgPath ../src/index.mjs --out tests tests"
 	},
 	"bin": {
 		"schema-generator": "./bin/schemagenerator.cjs"

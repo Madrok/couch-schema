@@ -5,6 +5,7 @@
 	"type": "object",
 	"definitions": {
 		"fieldShortcuts": {
+			"description": "Shortcuts for types of fields. Use these string versions to bypass making full object definitions for simple field types. These definitions all set 'required' to true, other than the ones prefixed with 'opt' like 'optstring'",
 			"enum": [
 				"string",
 				"optstring",
@@ -19,6 +20,7 @@
 			]
 		},
 		"fieldTypes": {
+			"description": "The type of the field.",
 			"enum": [
 				"string",
 				"boolean",
@@ -29,7 +31,8 @@
 				"buffer",
 				"link",
 				"subschema",
-				"calculated"
+				"calculated",
+				"function"
 			]
 		},
 		"fieldTypeDefiniton": {
@@ -57,15 +60,19 @@
 					"$ref": "#/definitions/fieldTypes"
 				},
 				"validate": {
+					"description": "The function to call to validate this object. Some validators are available in the Validators class, which can be used here as 'Validators.email' or such. Otherwise, this needs to be a full function declaration like '(v:string)=>(typeof v==='string' &&v.length>4)'",
 					"type": "string"
 				},
 				"validateFailMsg": {
+					"description": "The message to return if the field has failed validation. If this is not provided, a generic message will be used.",
 					"type": "string"
 				},
 				"required": {
+					"description": "Set to false if the field is not required, or true if it is. If it is true, and the record has the field undefined, it will fail on validation.",
 					"type": "boolean"
 				},
 				"default": {
+					"description": "The default value for a field if it is not defined in a record. This will not override the value 'null' on a field, only 'undefined'",
 					"type": [
 						"array",
 						"boolean",
@@ -76,26 +83,50 @@
 					]
 				},
 				"min": {
+					"description": "The minimum length of a string or array, or the highest value for a number",
 					"type": "number"
 				},
 				"max": {
+					"description": "The maximum length of a string or array, or the highest value for a number",
 					"type": "number"
 				},
 				"values": {
+					"description": "A set of values in fenced notation used to create Typescript type definitions to limit input. This could be something like \"'red'|'green'|'blue'\" for a string field",
 					"type": "string"
 				},
 				"calculator": {
-					"type": "string"
+					"description": "A fuction that is addded to the model for this schema that calculates a value that is not stored in the database. This is useful for things like calculating ages from dates in a record. This is a function block, so it must begin and end with curly braces, and return a value of the type specified in 'calculatedType'",
+					"type": "string",
+					"pattern": "^{.*}$"
 				},
 				"calculatedType": {
+					"description": "The typescript type returned by a calculator.",
 					"type": "string"
 				},
 				"schema": {
+					"description": "For links and subschemas, the schema linked to or embedded.",
 					"type": "string",
 					"pattern": "^([A-Za-z])+[A-Za-z0-9]*$"
 				},
 				"formatter": {
+					"description": "The function to call to format this field's value. Formatters must return the proper data type.",
 					"type": "string"
+				},
+				"comment": {
+					"description": "Comment or documentation about this field",
+					"type": "string",
+					"maxLength": 254
+				},
+				"functionParams": {
+					"description": "The parameters to the function. This needs to include the parentheses.",
+					"type": "string",
+					"maxLength": 254,
+					"pattern": "^(.*)$"
+				},
+				"functionBody": {
+					"description": "The function's body. This needs to include the enclosing curly bradces.",
+					"type": "string",
+					"pattern": "^{.*}$"
 				}
 			}
 		},
@@ -115,7 +146,7 @@
 	],
 	"properties": {
 		"name": {
-			"description": "The name of the schema",
+			"description": "The name of the schema. This is the name that is used as the Model class name, and used in the interfaces and schema definitions. Also, when using links or subschemas, this is the name that you would put into the 'schema' field in the other schema.",
 			"type": "string",
 			"minLength": 1,
 			"maxLength": 254,
