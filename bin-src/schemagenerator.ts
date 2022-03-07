@@ -28,7 +28,7 @@ const optionDefinitions = [
 	{ name: 'verbose', alias: 'v', type: Boolean },
 	{ name: 'src', type: String, multiple: false, defaultOption: true },
 	{ name: 'out', type: String },
-	{ name: 'pkgPath', type: String },
+	{ name: 'pkgPath', type: String, defaultValue: "couch-schema" },
 	{ name: 'force', alias: 'f', type: Boolean }
 ]
 
