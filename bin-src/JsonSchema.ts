@@ -7,5 +7,6 @@ export interface JsonSchema {
 	fields: Fields;
 	imports: string[];
 	requiresDateOnly: boolean;
+	requiresID: boolean;
 	customImportLines: string[];
 }

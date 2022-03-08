@@ -4,6 +4,7 @@
  */
 import _ from "lodash";
 import debugModule from 'debug';
+import { Model } from './Model.mjs';
 import { DateOnly } from "./DateOnly.mjs";
 const debug = debugModule('couch-schema');
 
@@ -12,7 +13,7 @@ const debug = debugModule('couch-schema');
  * @type SchemaFieldType
  * @memberof SchemaFieldInfo
  */
-type SchemaFieldType = "string" | "boolean" | "number" | "date" | "datetime" | "timestamp" | "buffer" | "array" | "schema" | "subschema" | "calculated";
+type SchemaFieldType = "string" | "boolean" | "number" | "date" | "datetime" | "timestamp" | "buffer" | "array" | "link" | "subschema" | "calculated" | "function";
 
 /**
  * Info about a field
@@ -21,11 +22,13 @@ type SchemaFieldType = "string" | "boolean" | "number" | "date" | "datetime" | "
 export interface SchemaFieldInfo<T> {
 	/** the type of the field */
 	type: SchemaFieldType;
+
 	/** default value, if any */
-	default?: any;
-	/** 
-	 * A function to validate input. If it throws an Error, Error.message 
-	 * will be used as validation failure text. 
+	default?: T;
+
+	/**
+	 * A function to validate input. If it throws an Error, Error.message
+	 * will be used as validation failure text.
 	 * param {T} v the data to validate
 	 * param {*} any additional data the validator needs
 	 * see {@link validateFailMsg|validateFailMsg}
@@ -34,9 +37,9 @@ export interface SchemaFieldInfo<T> {
 	/** a validation failure message. this is used if the validation function does not throw an error */
 	validateFailMsg?: string;
 
-	/** 
-	 * A function to format input. If it throws an Error, Error.message 
-	 * will be used as validation failure text. 
+	/**
+	 * A function to format input. If it throws an Error, Error.message
+	 * will be used as validation failure text.
 	 * param {T} v the data to validate
 	 * param {*} any additional data the validator needs
 	 **/
@@ -44,6 +47,7 @@ export interface SchemaFieldInfo<T> {
 
 	/** If field is required */
 	required?: boolean;
+
 	/** Minimum value. For arrays, indicates minimum array length, strings the minimum length */
 	min?: number | Date | DateOnly;
 	/** Maximum value. For arrays, max number of elements, for strings max string length */
@@ -51,8 +55,21 @@ export interface SchemaFieldInfo<T> {
 
 	/** a function called for calculated fields */
 	calculator?: string;
+
 	/** a typescript style fenced values list */
 	values?: string;
+
+	/** for link fields, the Model that it is linked to */
+	model?: typeof Model;
+
+	/** documentation of field */
+	comment?: string;
+
+	/** function definition to add to model, parameters portion */
+	functionParams?: string;
+
+	/** function definition to add to model, function body portion */
+	functionBody?: string;
 }
 
 /**
@@ -247,8 +264,12 @@ export class Schema {
 			}
 
 			let getType = (v: any) => {
-				if (Array.isArray(v))
-					return "Array<>";
+				if (Array.isArray(v)) {
+					if (v.length > 0) {
+						return `${v[0].constructor?.name}[]`;
+					}
+					return "Array<unknown>";
+				}
 				else if (typeof v === "object" && v.constructor)
 					return v.constructor.name;
 				return typeof v;
@@ -320,7 +341,7 @@ export class Schema {
 	/**
 	 * Validate data type matches record value
 	 * @param {SchemaFieldInfo} info The schema field info
-	 * @param {*} v the value to check 
+	 * @param {*} v the value to check
 	 * @returns {boolean} true if validation passed
 	 * @todo some cases not handled
 	 */

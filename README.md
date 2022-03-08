@@ -38,9 +38,22 @@ The more advanced format is
         "type": "string",
         "validate": "(v:string) => (v && v.length > 4)",
         "validateFailMsg": "Name length must be more than 4 characters"
-    }    
+    }
 }
 ```
+
+#### validateFailMsg
+A message passed back if the validation fails. This string has several replace fields
+```
+validateFailMsg: '"%v%" is not a valid group',
+```
+The available replacement strings are:
+- %v% - the value in the field
+- %s% - the type from the schema's field info
+- %S% - the field type from the Schema
+- %t% - the 'typeof' type of the actual value in field of the model
+
+In general, the only ones needed are %v% and %s%
 
 ## Command Line Tool
 Installed with the package is a binary called 'schema-generator'. This is the tools used to generate typescript models from the json schema files.
@@ -51,19 +64,19 @@ schema-generator --help
 ```
 CouchDB Schema Generator
 
-  Generates schema files for CouchDB. JSON files in a directory are loaded and  
-  turned into typescript schema files, and output in the destination directory  
+  Generates schema files for CouchDB. JSON files in a directory are loaded and
+  turned into typescript schema files, and output in the destination directory
 
 Options
 
-  -h, --help         Display this usage guide.                                                
-  --src string       The source directory. All json files in this directory will be processed 
-  --pkgPath string   Override for the couch-schema import line                                
-  --out string       The output directory. This directory must exist, it will not be created  
-  --force            If the output file exists, force overwrite it.                           
+  -h, --help         Display this usage guide.
+  --src string       The source directory. All json files in this directory will be processed
+  --pkgPath string   Override for the couch-schema import line
+  --out string       The output directory. This directory must exist, it will not be created
+  --force            If the output file exists, force overwrite it.
 
 Usage
 
-  $ schema-generator [--verbose] [--force|-f] --out directory [--src] directory 
-                                                   
+  $ schema-generator [--verbose] [--force|-f] --out directory [--src] directory
+
 ```

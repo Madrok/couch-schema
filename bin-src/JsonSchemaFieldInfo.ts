@@ -5,8 +5,35 @@ import { JsonSchema } from "./JsonSchema";
  * @type JsonSchemaFieldType
  * @memberof JsonSchemaFieldInfo
  */
-type JsonSchemaFieldType = "string" | "boolean" | "number" | "date" | "datetime" | "timestamp" | "buffer" | "array" | "schema" | "subschema" | "calculated";
+type JsonSchemaFieldType = "string" | "boolean" | "number" | "date" | "datetime" | "timestamp" | "buffer" | "link" | "subschema" | "calculated";
 
+/**
+ * The field keys allowed, in a json schema file
+ */
+export const fieldAllowedKeys = [
+	'type',
+	'default',
+	'values',
+	'validate',
+	'validateFailMsg',
+	'schema',
+	'formatter',
+	'required',
+	'min',
+	'max',
+	'calculator',
+	'calculatedType'
+];
+
+export const fieldDisallowedKeys = [
+	'id',
+	"_id",
+	"_isArray",
+	"get",
+	"set",
+	"doctype__",
+
+]
 
 export interface JsonSchemaFieldInfo {
 	/** flag used in generation to indicate array types */
@@ -17,9 +44,9 @@ export interface JsonSchemaFieldInfo {
 	default?: any;
 	/** valid values for typescript fenced typing */
 	values?: string;
-	/** 
-	 * A function to validate input. If it throws an Error, Error.message 
-	 * will be used as validation failure text. 
+	/**
+	 * A function to validate input. If it throws an Error, Error.message
+	 * will be used as validation failure text.
 	 * param {T} v the data to validate
 	 * param {*} any additional data the validator needs
 	 * see {@link validateFailMsg|validateFailMsg}
@@ -28,10 +55,12 @@ export interface JsonSchemaFieldInfo {
 	/** a validation failure message. this is used if the validation function does not throw an error */
 	validateFailMsg?: string;
 
+	/** for links or subschemas, this is the schema linked to or embedded */
 	schema?: string | JsonSchema,
-	/** 
-	 * A function to format input. If it throws an Error, Error.message 
-	 * will be used as validation failure text. 
+
+	/**
+	 * A function to format input. If it throws an Error, Error.message
+	 * will be used as validation failure text.
 	 * param {T} v the data to validate
 	 * param {*} any additional data the validator needs
 	 **/

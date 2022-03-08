@@ -8,9 +8,9 @@ import _ from "lodash";
 
 import { GeneratorError } from "./GeneratorError.js";
 import { JsonSchema } from "./JsonSchema.js";
-import { JsonSchemaFieldInfo } from "./JsonSchemaFieldInfo.js";
 import { IProgramOptions } from "./schemagenerator.js";
 import { Writer } from "./Writer.js";
+import { fieldAllowedKeys, fieldDisallowedKeys, Fields, JsonSchemaFieldInfo } from "./JsonSchemaFieldInfo.js";
 
 type validtypes = 'number' | 'string' | 'boolean';
 type JsonSchemaBasicType = "string" | "optstring" | "boolean" | "optboolean" | "number" | "date" | "datetime" | "timestamp";
@@ -35,14 +35,14 @@ export default class Generator {
 		}
 
 		for (let f of files) {
-			this.readFile(f);
+			await this.readFile(f);
 		}
 
 		for (let k of Object.keys(this.dict)) {
 			// console.log(k);
 			try {
 				// moved to loading this.checkStructure(this.dict[k]);
-				this.populateSubschemas(k);
+				this.populateLinkedSchemas(k);
 				this.checkAdditionalImports(k);
 			} catch (e) {
 				console.error(`Error in ${k}: ${e.message}`);
@@ -67,7 +67,7 @@ export default class Generator {
 			} catch (e) {
 				if (e instanceof GeneratorError)
 					console.error(`Error generating file for ${k}: ${e.message}`);
-				else throw e;
+				throw new GeneratorError(`Error generating file for ${k}: ${e.message}`);
 			}
 		}
 
@@ -79,14 +79,14 @@ export default class Generator {
 	 * @param {string} filename file path and name
 	 */
 	async readFile(filename: string) {
+		console.log(`loading ${filename}`);
 		try {
 			let buf = readFileSync(filename);
 			let obj: any = JSON.parse(buf.toString());
 			obj['filename'] = filename;
 			//this.dict[name] = obj;
 			this.dict[obj['name']] = this.checkStructure(obj)
-			// this.versions[name] = obj['version'];
-			debug(`loaded file ${filename}`);
+			// debug(`loaded file ${filename}`);
 		} catch (e) {
 			if (e instanceof GeneratorError) {
 				console.error(`Error reading ${filename}: ${e.message}`);
@@ -99,8 +99,8 @@ export default class Generator {
 	/**
 	 * Check that the structure is correct, and return an object
 	 * updated to the JsonSchema
-	 * @param {string} obj The schema name 
-	 * @param {*} fields The schema definition 
+	 * @param {string} obj The schema name
+	 * @param {*} fields The schema definition
 	 */
 	private checkStructure(obj: any): JsonSchema {
 		let jso = (obj as JsonSchema);
@@ -118,20 +118,10 @@ export default class Generator {
 		for (let k of Object.keys(fields)) {
 			// debug(`Checking ${obj.name}.fields.${k}`);
 
-			switch (k) {
-				case "get":
-				case "set":
-				case "doctype__":
-					throw new GeneratorError(`${k} is a reserved keyword.`);
-				case "_id":
-					throw new GeneratorError(`${k} is not required in a schema.`);
-				case "id":
-					throw new GeneratorError(`CouchDB already has an _id field, using 'id' as a field name is dangerous.`);
-				default:
-					break;
-			}
+			if (fieldDisallowedKeys.includes(k))
+				throw new GeneratorError(`${k} : this field name is not permitted in schemas`);
 			if (k[0] === "_")
-				throw new GeneratorError(`${k} : leading underscores not permitted by CouchDB.`)
+				throw new GeneratorError(`${k} : leading underscores not permitted by CouchDB.`);
 
 			let _isArray = false;
 			let field = fields[k];
@@ -171,7 +161,7 @@ export default class Generator {
 						fields[k] = _.clone(TTimestamp);
 						break;
 					default:
-						throw new GeneratorError(`unknown field type '${field}' for ${k}`);
+						throw new GeneratorError(`unknown basic field type '${field}' for ${k}`);
 				}
 				// shortcut since the rest of the data is fine
 				fields[k]._isArray = _isArray;
@@ -181,6 +171,11 @@ export default class Generator {
 			if (typeof field !== 'object')
 				throw new GeneratorError(`${k} is not a valid object, array or string`);
 
+			// check if all fields in this definition are valid
+			for (const [key, v] of Object.entries(fields[k])) {
+				if (!fieldAllowedKeys.includes(key))
+					throw new GeneratorError(`${key} is not a valid field`)
+			}
 			fields[k]._isArray = _isArray;
 			let checkIsValid = (subfield: string, types: validtypes[], required: boolean = false) => {
 				let v = fields[k][subfield];
@@ -197,17 +192,22 @@ export default class Generator {
 				throw new GeneratorError(`${k}.${subfield} has to be ${types.length > 1 ? "one of" : ""} ${types.join(",")}`);
 			}
 
+			let fieldType = fields[k]['type'];
+
 			// check other fields
-			checkIsValid('type', ['string']);
+			checkIsValid('type', ['string'], true);
 			checkIsValid('values', ['string']);
 			checkIsValid('validate', ['string']);
 			checkIsValid('formatter', ['string']);
 			checkIsValid('validateFailMsg', ['string']);
 			checkIsValid('min', ['number', 'string']);
 			checkIsValid('max', ['number', 'string']);
-			let calcRequired = fields[k]['type'] === 'calculated';
-			checkIsValid('calculator', ['string'], calcRequired);
-			checkIsValid('calculatedType', ['string'], calcRequired);
+			checkIsValid('calculator', ['string'], fieldType === 'calculated');
+			checkIsValid('calculatedType', ['string'], fieldType === 'calculated');
+			checkIsValid('schema', ['string'], fieldType === 'subschema' || fieldType === 'link');
+			checkIsValid('functionParams', ['string'], fieldType === 'function');
+			checkIsValid('functionBody', ['string'], fieldType === 'function');
+			checkIsValid('comment', ['string']);
 
 			// check required field
 			if (typeof fields[k].required === 'undefined')
@@ -235,20 +235,20 @@ export default class Generator {
 	 * Atttach all the subschema objects to this schema.
 	 * This adds the field 'object' to the object at each
 	 * key that is a subschema
-	 * @param {string} schema The schema name 
+	 * @param {string} schema The schema name
 	 */
-	private populateSubschemas(schemaName: string) {
+	private populateLinkedSchemas(schemaName: string) {
 		let schema = this.dict[schemaName];
 		let fields = schema.fields;
 		for (let k of Object.keys(fields)) {
-			if (fields[k].type === "subschema") {
+			if (fields[k].type === "subschema" || fields[k].type === 'link') {
 				let subschemaName = fields[k].schema as string;
 				if (subschemaName === undefined) {
 					throw new GeneratorError(`${schema.name} missing 'schema' field for field '${k}'`);
 				}
 				let subschema = this.dict[subschemaName];
 				if (subschema === undefined) {
-					throw new GeneratorError(`${schema.name} field '${k}' refers to missing subschema named ${subschemaName}`);
+					throw new GeneratorError(`${schema.name} field '${k}' refers to missing schema named ${subschemaName}`);
 				}
 				schema.imports.push(subschemaName);
 				fields[k].schema = subschema;
@@ -266,15 +266,19 @@ export default class Generator {
 		for (const [key, value] of Object.entries(fields)) {
 			if (value.type === 'date')
 				schema.requiresDateOnly = true;
+			if (value.type === 'link')
+				schema.requiresID = true;
 		}
 
 	}
 
 	/**
-	 * Check if any of the field definitions in a schema have 
+	 * Check if any of the field definitions in a schema have
 	 * a circular reference back to itself
+	 * @todo examine and implement?
 	 */
 	private checkCircularDependency() {
+		return;
 		for (let k of Object.keys(this.dict)) {
 			let schema = this.dict[k];
 			// debug(`checking ${schema.name} for circular dependencies`);
@@ -285,9 +289,9 @@ export default class Generator {
 		}
 	}
 
-	private isCyclic(obj: any): { cyclic: boolean, msg: string } {
+	private isCyclic(obj: Fields): { cyclic: boolean, msg: string } {
 		var seenObjects = [];
-		function detect(obj): { cyclic: boolean, msg: string } {
+		function detect(obj: Fields | JsonSchemaFieldInfo): { cyclic: boolean, msg: string } {
 			if (obj && typeof obj === 'object') {
 				if (seenObjects.indexOf(obj) !== -1) {
 					return { cyclic: true, msg: "" };
